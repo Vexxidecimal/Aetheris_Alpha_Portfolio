@@ -8,7 +8,9 @@ Written by: Michael Kelley
 https://www.linkedin.com/in/michael-kelley-ab1a49402/
 
 Released works:
-MetaOS: To be announced
+
+MetaOS: https://www.meta.com/experiences/aetheris/1288280001036999/?srsltid=AU7gw4WocL4Y9KRj7cXlW6XuF3R5TnTAZTCxKI9ENwOixH3G35PQS-Oe
+
 Amazon: https://www.amazon.com/3D-Asset-Development-Biochemical-Animations-ebook/dp/B0FQ18M57G/ref=sr_1_1?crid=3JZDSD5H62I2I&dib=eyJ2IjoiMSJ9.kHIo_jwefvQO9E_Dlg49zg.qrVdF4O_YkAveRA2wUT4Ts-HYFkJCSTBBSmwiM-ajmU&dib_tag=se&keywords=3d+asset+development+for+biochemical+animations&qid=1787769324&sprefix=3d+asset+development+for+biochemical+animation%2Caps%2C125&sr=8-1
 
 Token efficiency plan outlined in AGENTS.md
