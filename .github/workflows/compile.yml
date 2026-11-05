@@ -1,46 +1,64 @@
 name: Build Android APK
 
+# Builds the debug APK and runs unit tests on every pull request to main,
+# on pushes to main, and on Applejack's work branches. Nothing here signs,
+# publishes or touches the Meta store: no secrets are used.
 on:
+  pull_request:
+    branches: [main]
   push:
-    branches:
-      - main
+    branches: [main, 'applejack/**']
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: Build APK
+    name: Build APK + unit tests
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           lfs: true
 
-      - name: Set up JDK 17
+      # Gradle's daemon toolchain asks for JDK 25 (gradle/gradle-daemon-jvm.properties).
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '25'
           distribution: 'temurin'
 
-      - name: Setup Android SDK & NDK
+      # Installs cmdline-tools and accepts licenses. AGP then fetches the exact
+      # platform (compileSdk 37), NDK 28.2.13676358 and CMake 3.22.1 it needs.
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          packages: 'platforms;android-34 build-tools;34.0.0 ndk;25.2.9519653'
 
-      - name: Setup Gradle
+      - name: Set up Gradle (with cache)
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build Debug APK
-        run: gradle assembleDebug --stacktrace
+      - name: Build debug APK and run unit tests
+        run: ./gradlew assembleDebug testDebugUnitTest --stacktrace
 
-      - name: List All Generated Files
-        run: |
-          echo "=== All Build Artifacts in Workspace ==="
-          find . -type f \( -name "*.apk" -o -name "*.aar" -o -name "*.so" \)
-
-      - name: Upload APK
+      - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: MetaQuest-Debug-APK
-          path: '**/*.apk'
+          name: Aetheris-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: app/build/reports/tests/
+          if-no-files-found: ignore
+          retention-days: 14
